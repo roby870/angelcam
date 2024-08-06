@@ -9,7 +9,7 @@ import Form from 'react-bootstrap/Form';
 
 function Login(){
 
-    
+
     const [alert, setAlert] = useState(null);
     const [token, setToken] = useState('');
     const [email, setEmail] = useState('');
@@ -45,7 +45,7 @@ function Login(){
                 navigate('/');
             } 
           } catch (error) {
-            
+            console.log(error)
         }
     };
     

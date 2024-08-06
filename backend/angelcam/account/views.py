@@ -9,8 +9,8 @@ class LoginView(APIView):
     def post(self, request):
         token = request.data.get('token')
         headers = {
-        'Authorization': f'PersonalAccessToken {token}',
-        'Accept': 'application/json'
+            'Authorization': f'PersonalAccessToken {token}',
+            'Accept': 'application/json'
         }  
         response = requests.get(self.angelcam_api_url, headers=headers)
         if response.status_code == 200:
