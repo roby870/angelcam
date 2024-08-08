@@ -7,7 +7,7 @@ class SharedCamerasView(APIView):
     angelcam_api_url = 'https://api.angelcam.com/v1/shared-cameras/' 
 
 
-    def process_data(self, data):
+    def _process_data(self, data):
         selected_data = []
         for item in data.get('results', []):
             name = item.get('name')
@@ -36,7 +36,7 @@ class SharedCamerasView(APIView):
         response = requests.get(self.angelcam_api_url, headers=headers)
         if response.status_code == 200:
             data = response.json()
-            selected_data = self.process_data(data)
+            selected_data = self._process_data(data)
             return Response(selected_data, status=200)
         elif response.status_code == 400:
             return Response({'message': 'Invalid.'}, status=400)
