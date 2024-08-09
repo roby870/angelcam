@@ -1,10 +1,12 @@
 import React from 'react';
 import axios from 'axios';
 import Card from 'react-bootstrap/Card';
+import { useNavigate } from 'react-router-dom';
 
 
 function CameraRecodingClipsListItem({id, start, end}) {
 
+    const navigate = useNavigate();
 
     //hacer un handle para que cuando hagan clic en la card 
     //se muestre un spinner, se pida la url, y se redirija al video
@@ -16,13 +18,13 @@ function CameraRecodingClipsListItem({id, start, end}) {
 
 
     const handleClick = () => {
-        console.log('Card clicked!');
         const fetchData = async () => {
           try {
             const isoDateStringStart = start.replace(' ', 'T') + 'Z';
             const isoDateStringEnd = end.replace(' ', 'T') + 'Z';
             const response = await axios.get(`http://127.0.0.1:8000/recording/shared-recording-stream/${id}/${isoDateStringStart}/${isoDateStringEnd}/`);
-            console.log(response.data);
+            const encodedUrl = encodeURIComponent(response.data);
+            navigate(`/camera-display/${encodedUrl}/?startTime=${start}&endTime=${end}`);
           } catch (error) {
             console.error('Error fetching data:', error);
           }
