@@ -33,16 +33,20 @@ class SharedCamerasView(APIView):
         return selected_data
 
 
-    def get(self, request):
+    def get(self, request, next_url = None):
         auth_header = request.headers.get('Authorization')
         headers = {
             'Authorization': f'{auth_header}',
             'Accept': 'application/json'
-        }  
-        response = requests.get(self.angelcam_api_url, headers=headers)
+        } 
+        if(next_url):
+            response = requests.get(next_url, headers=headers)
+        else: 
+            response = requests.get(self.angelcam_api_url, headers=headers)
         if response.status_code == 200:
             data = response.json()
             selected_data = self._process_data(data)
-            return Response(selected_data, status=200)
+            response_data = {"results": selected_data, "next": data.get('next')}
+            return Response(response_data, status=200) 
         else:
             return Response(status=response.status_code)

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import CameraCard from '../CameraCard';
 import Button from 'react-bootstrap/Button';
 
@@ -10,6 +11,8 @@ const Home = () => {
   const initialRender = useRef(true);
   const navigate = useNavigate();
   const [cameras, setCameras] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [nextUrl, setNextUrl] = useState("");
 
 
   useEffect(() => {
@@ -24,7 +27,9 @@ const Home = () => {
       const fetchData = async () => {
         try {
           const response = await axios.get('http://127.0.0.1:8000/camera/shared-cameras/');
-          setCameras(response.data)
+          setCameras(response.data.results)
+          setHasMore(response.data.next !== null);
+          setNextUrl(response.data.next)
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -32,6 +37,22 @@ const Home = () => {
       fetchData();
     }
   }, [navigate]);
+
+
+  const handleNextPage = (event) => {
+    const fetchNextPage = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/camera/shared-cameras/${nextUrl}/`);
+        setCameras(response.data)
+        setCameras(prevCameras => {return [...prevCameras, ...response.data.results]});
+        setHasMore(response.data.next !== null);
+        setNextUrl(response.data.next)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchNextPage();
+  }
 
 
   const handleFullScreenButtonClick = (event) => {
@@ -47,14 +68,34 @@ const Home = () => {
   return (
     <div className="container mt-5">
       <div className="row">
-        {cameras.map(item => (
-          <div className="col-md-4 d-flex align-items-stretch" key={item.id}>
-            <CameraCard name={item.name} mjpeg_url={item.mjpeg_url}>
-              <Button variant="primary" value={item.hls_url? item.hls_url : item.mjpeg_url} data-type={item.type} onClick={handleFullScreenButtonClick}>Full screen</Button>
-              {item.has_recording && <Button className='ms-3' variant="primary" value={item.id} data-type={item.type} onClick={handleClipsButtonClick}>Clips</Button>}
-            </CameraCard>
-          </div>
-        ))}
+          <InfiniteScroll
+              className="row row-cols-1 g-4"
+              dataLength={cameras.length} // This is important to set to the length of the data
+              next={handleNextPage}
+              scrollThreshold={0}
+              hasMore={hasMore}
+              loader={
+                  <div className="d-flex justify-content-center my-3">
+                      <div className="spinner-border text-primary" role="status">
+                          <span className="sr-only"> </span>
+                      </div>
+                  </div>
+              }
+              endMessage={
+                  <p style={{ textAlign: 'center' }}>
+                      
+                  </p>
+              }
+          >
+              {cameras.map(item => (
+                <div className="col-md-4 d-flex align-items-stretch" key={item.id}>
+                  <CameraCard name={item.name} mjpeg_url={item.mjpeg_url}>
+                    <Button variant="primary" value={item.hls_url? item.hls_url : item.mjpeg_url} data-type={item.type} onClick={handleFullScreenButtonClick}>Full screen</Button>
+                    {item.has_recording && <Button className='ms-3' variant="primary" value={item.id} data-type={item.type} onClick={handleClipsButtonClick}>Clips</Button>}
+                  </CameraCard>
+                </div>
+              ))}
+          </InfiniteScroll>
       </div>
     </div>
   );
