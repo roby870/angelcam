@@ -5,7 +5,6 @@ from account import views as account_views
 
 class SharedCamerasView(APIView):
     authentication_classes = [account_views.ExternalTokenAuthentication]
-
     angelcam_api_url = 'https://api.angelcam.com/v1/shared-cameras/' 
 
 
@@ -45,11 +44,5 @@ class SharedCamerasView(APIView):
             data = response.json()
             selected_data = self._process_data(data)
             return Response(selected_data, status=200)
-        elif response.status_code == 400:
-            return Response({'message': 'Invalid.'}, status=400)
-        elif response.status_code == 401:
-            return Response({'message': 'Not authenticated.'}, status=401)
-        elif response.status_code == 403:
-            return Response({'message': 'Permission denied.'}, status=403)
         else:
-            return Response({'message': 'Not found.'}, status=404)
+            return Response(status=response.status_code)

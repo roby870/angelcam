@@ -128,7 +128,12 @@ const ClipDisplay = () => {
         const ticks = [];
         for (let i = 0; i <= duration; i += 15) {
             const leftPosition = (i / duration) * 100;
-            const isFirstTick = i === 0;
+            let transformValue = 'translateX(-50%)';
+            if (i === 0) {
+                transformValue = 'none';
+            } else if (i === duration) {
+                transformValue = 'translateX(-100%)';
+            }
             ticks.push(
                 <div 
                     key={i} 
@@ -136,7 +141,7 @@ const ClipDisplay = () => {
                         position: 'absolute', 
                         left: `${leftPosition}%`, 
                         top: '15px', 
-                        transform: isFirstTick ? 'none' : 'translateX(-50%)', 
+                        transform: transformValue, 
                         fontSize: '12px' 
                     }}
                 >
@@ -146,7 +151,7 @@ const ClipDisplay = () => {
         }
         return ticks;
     };
-
+    
 
     return (
         <div className="player-wrapper d-flex justify-content-center align-items-center flex-column mt-3">

@@ -51,7 +51,7 @@ const Home = () => {
           <div className="col-md-4 d-flex align-items-stretch" key={item.id}>
             <CameraCard name={item.name} mjpeg_url={item.mjpeg_url}>
               <Button variant="primary" value={item.hls_url? item.hls_url : item.mjpeg_url} data-type={item.type} onClick={handleFullScreenButtonClick}>Full screen</Button>
-              {item.has_recording && <Button className='ms-5' variant="primary" value={item.id} data-type={item.type} onClick={handleClipsButtonClick}>Clips</Button>}
+              {item.has_recording && <Button className='ms-3' variant="primary" value={item.id} data-type={item.type} onClick={handleClipsButtonClick}>Clips</Button>}
             </CameraCard>
           </div>
         ))}

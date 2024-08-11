@@ -33,9 +33,6 @@ const CameraRecordingDaysList = () => {
         fetchData();
       }
     }, [navigate, id]);
-
-
-    //const renderDate()
   
   
     return (

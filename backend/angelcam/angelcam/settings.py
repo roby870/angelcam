@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'angelcam.middleware.statusMessageMiddleware.StatusMessageMiddleware',
 ]
 
 ROOT_URLCONF = 'angelcam.urls'

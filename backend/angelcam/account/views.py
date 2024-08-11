@@ -29,10 +29,8 @@ class ExternalTokenAuthentication(BaseAuthentication):
         if response.status_code == 200:
             user = CustomUser(email=response.json().get('email'))
             return (user, token)
-        elif response.status_code == 401:
-            return Response({'message': 'Missing or invalid authorization.'}, status=401)
-        else: 
-            return Response({'message': 'Missing permission.'}, status=403)
+        else:
+            return Response(status=response.status_code)
 
     
 
@@ -58,7 +56,5 @@ class LoginView(APIView):
                 return Response({'message': 'Login successful'}, status=200)
             else: 
                 return Response({'message': 'Missing or invalid authorization.'}, status=401)
-        elif response.status_code == 401:
-            return Response({'message': 'Missing or invalid authorization.'}, status=401)
-        else: 
-            return Response({'message': 'Missing permission.'}, status=403)
+        else:
+            return Response(status=response.status_code)

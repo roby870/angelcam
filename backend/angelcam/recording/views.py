@@ -4,12 +4,7 @@ import requests
 from datetime import datetime, timedelta
 from account import views as account_views
 
-"""
-si retention es null, no hay nada grabado. Si no es null, chequear que
-recording_start y recording_end tampoco estén en null, si está alguno en null
-hay que ver de usar el dato de retention para sacar la diferencia entre el dato que no está en null
-y la retention y en base a eso calcular cual es el start o el fin
-"""
+
 class RecordingDaysView(APIView):
     authentication_classes = [account_views.ExternalTokenAuthentication]
     angelcam_recording_url = 'https://api.angelcam.com/v1/shared-cameras/{}/recording/'
@@ -40,8 +35,12 @@ class RecordingDaysView(APIView):
             'Accept': 'application/json'
         }  
         response = requests.get(self.angelcam_recording_url.format(id), headers=headers)
-        intervals = self._split_up_by_days(response.json())
-        return Response(intervals, status=200)
+        if response.status_code == 200:
+            if(response.json()["retention"] and response.json()["recording_start"] and response.json()["recording_end"]):
+                intervals = self._split_up_by_days(response.json())
+            return Response(intervals, status=200)
+        else:
+            return Response(status=response.status_code)
     
 
 class RecordingClipsView(APIView):
@@ -65,13 +64,17 @@ class RecordingClipsView(APIView):
             'Accept': 'application/json'
         }  
         response = requests.get(self.angelcam_timeline_url.format(id, start, end), headers=headers)
-        formatted_segments = self._format_segments(response.json().get('segments', []))
-        return Response(formatted_segments, status=200) 
+        if response.status_code == 200:
+            formatted_segments = self._format_segments(response.json().get('segments', []))
+            return Response(formatted_segments, status=200)
+        else:
+            return Response(status=response.status_code)
     
 
 class RecordingStreamView(APIView):
     authentication_classes = [account_views.ExternalTokenAuthentication]
     angelcam_stream_url = 'https://api.angelcam.com/v1/shared-cameras/{}/recording/stream/?start={}&end={}'
+
 
     def get(self, request, id, start, end):
         auth_header = request.headers.get('Authorization')
@@ -80,4 +83,7 @@ class RecordingStreamView(APIView):
             'Accept': 'application/json'
         }  
         response = requests.get(self.angelcam_stream_url.format(id, start, end), headers=headers)
-        return Response(response.json().get('url'), status=200) 
+        if response.status_code == 200:
+            return Response(response.json().get('url'), status=200) 
+        else:
+            return Response(status=response.status_code)
