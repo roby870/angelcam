@@ -80,5 +80,4 @@ class RecordingStreamView(APIView):
             'Accept': 'application/json'
         }  
         response = requests.get(self.angelcam_stream_url.format(id, start, end), headers=headers)
-        print(response.json().get('url'))
         return Response(response.json().get('url'), status=200) 

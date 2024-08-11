@@ -7,23 +7,28 @@ class SharedCamerasView(APIView):
     angelcam_api_url = 'https://api.angelcam.com/v1/shared-cameras/' 
 
 
+    """For performance reasons, we select a mjpeg format (a list of cameras
+    rendered all together consume more CPU). If present, we also return hls format
+    for an individual, more quality rendering."""
     def _process_data(self, data):
         selected_data = []
         for item in data.get('results', []):
-            name = item.get('name')
-            item_id = item.get('id')
             streams = item.get('streams', [])
             mjpeg_url = None
+            hls_url = None
             for stream in streams:
                 if stream.get('format') == 'mjpeg':
                     mjpeg_url = stream.get('url')
-                    break
-            if name and item_id and mjpeg_url:
-                selected_data.append({
-                    'name': name,
-                    'id': item_id,
-                    'mjpeg_url': mjpeg_url,
-                })
+                elif stream.get('format') == 'hls':
+                    hls_url = stream.get('url')
+            selected_data.append({
+                'name': item.get('name'),
+                'id': item.get('id'),
+                'mjpeg_url': mjpeg_url,
+                'hls_url': hls_url,
+                'type': item.get('type'),
+                'has_recording': item.get('has_recording')
+            })
         return selected_data
 
 

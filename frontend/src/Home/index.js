@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import CameraCard from '../CameraCard';
+import Button from 'react-bootstrap/Button';
 
 
 const Home = () => {
@@ -33,12 +34,25 @@ const Home = () => {
   }, [navigate]);
 
 
+  const handleFullScreenButtonClick = (event) => {
+    const encodedUrl = encodeURIComponent(event.target.value);
+    navigate(`/camera-live-display/${encodedUrl}/?type=${event.target.dataset.type}`);
+  }
+
+  const handleClipsButtonClick = (event) => {
+    navigate(`/camera-recordings-list/${event.target.value}?type=${event.target.dataset.type}`);
+  }
+
+  
   return (
     <div className="container mt-5">
       <div className="row">
         {cameras.map(item => (
           <div className="col-md-4 d-flex align-items-stretch" key={item.id}>
-            <CameraCard name={item.name} url={item.mjpeg_url}></CameraCard>
+            <CameraCard name={item.name} mjpeg_url={item.mjpeg_url}>
+              <Button variant="primary" value={item.hls_url? item.hls_url : item.mjpeg_url} data-type={item.type} onClick={handleFullScreenButtonClick}>Full screen</Button>
+              {item.has_recording && <Button className='ms-5' variant="primary" value={item.id} data-type={item.type} onClick={handleClipsButtonClick}>Clips</Button>}
+            </CameraCard>
           </div>
         ))}
       </div>

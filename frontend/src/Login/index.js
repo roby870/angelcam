@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import qs from 'qs';
 import { useNavigate } from 'react-router-dom';
@@ -9,11 +9,22 @@ import Form from 'react-bootstrap/Form';
 
 function Login(){
 
-
+    const initialRender = useRef(true);
     const [alert, setAlert] = useState(null);
     const [token, setToken] = useState('');
     const [email, setEmail] = useState('');
     const navigate = useNavigate();
+
+
+    useEffect(() => {
+        if (initialRender.current) {
+          initialRender.current = false;
+          const accessToken = localStorage.getItem('token');
+          if (accessToken) {
+            navigate('/');
+          } 
+        }
+    }, []);
 
 
     axios.interceptors.response.use(function (response) {

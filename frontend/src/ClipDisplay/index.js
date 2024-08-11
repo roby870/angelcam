@@ -1,17 +1,19 @@
 import React, { useRef, useState, useEffect }  from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import ReactPlayer from 'react-player';
 import axios from 'axios';
+import ReactPlayer from 'react-player';
 
 
-const CameraDisplay = () => {
 
+const ClipDisplay = () => {
+    
     const { url } = useParams();
     const initialRender = useRef(true);
     const playerRef = useRef(null);
     const [playedSeconds, setPlayedSeconds] = useState(0);
     const [duration, setDuration] = useState(0);
     const [searchParams] = useSearchParams();
+    const type = searchParams.get('type');
     const [streamPaused, setStreamPaused] = useState(false);
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
@@ -58,12 +60,11 @@ const CameraDisplay = () => {
         if(state.loadedSeconds > duration && !streamPaused){ //Pause stream
             const fetchData = async () => {
                 try{
-                    const regex = /^https:\/\/([^\/]+)\/recording\/streams\/([^\/]+)\//;
+                    const regex = /^https:\/\/([^/]+)\/recording\/streams\/([^/]+)\//;
                     const match = url.match(regex);
                     const streamer_domain = match[1];
                     const stream_id = match[2];
                     const response = await axios.post(`https://${streamer_domain}/recording/streams/${stream_id}/pause/`);
-                    console.log(response.data)
                     setStreamPaused(true)
                 }
                 catch (error){
@@ -97,15 +98,15 @@ const CameraDisplay = () => {
     };
 
 
-    const handleMouseDown = (e) => {
+    const handleMouseDown = (event) => {
         setIsDragging(true);
-        updateSeekPosition(e);
+        updateSeekPosition(event);
     };
 
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (event) => {
         if (isDragging) {
-            updateSeekPosition(e);
+            updateSeekPosition(event);
         }
     };
 
@@ -115,9 +116,9 @@ const CameraDisplay = () => {
     };
 
 
-    const updateSeekPosition = (e) => {
+    const updateSeekPosition = (event) => {
         const rect = progressBarRef.current.getBoundingClientRect();
-        const clickPosition = e.clientX - rect.left;
+        const clickPosition = event.clientX - rect.left;
         const newTime = (clickPosition / rect.width) * duration;
         handleSeek(newTime);
     };
@@ -127,8 +128,18 @@ const CameraDisplay = () => {
         const ticks = [];
         for (let i = 0; i <= duration; i += 15) {
             const leftPosition = (i / duration) * 100;
+            const isFirstTick = i === 0;
             ticks.push(
-                <div key={i} style={{ position: 'absolute', left: `${leftPosition}%`, top: '15px', transform: 'translateX(-50%)', fontSize: '12px' }}>
+                <div 
+                    key={i} 
+                    style={{ 
+                        position: 'absolute', 
+                        left: `${leftPosition}%`, 
+                        top: '15px', 
+                        transform: isFirstTick ? 'none' : 'translateX(-50%)', 
+                        fontSize: '12px' 
+                    }}
+                >
                     {formatTime(startTime + i)}
                 </div>
             );
@@ -138,20 +149,23 @@ const CameraDisplay = () => {
 
 
     return (
-        <div className="player-wrapper">
-            <ReactPlayer
-                ref={playerRef}
-                url={url}
-                playing={true}
-                controls={false}
-                width="100%"
-                height="100%"
-                onProgress={handleProgress}
-                progressInterval={100} 
-            />
+        <div className="player-wrapper d-flex justify-content-center align-items-center flex-column mt-3">
+            { type === "h264" ? 
+                <ReactPlayer
+                    ref={playerRef}
+                    url={url}
+                    playing={true}
+                    controls={false}
+                    width="80%"
+                    height="80%"
+                    onProgress={handleProgress}
+                    progressInterval={100}
+                /> :
+                <img src={url} className="card-img-top" alt="clip" /> 
+            }
             <div
                 ref={progressBarRef}
-                style={{ position: 'relative', width: '100%', height: '30px', backgroundColor: '#e0e0e0'}}
+                style={{ position: 'relative', width: '80%', height: '30px', backgroundColor: '#e0e0e0'}}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
@@ -171,10 +185,9 @@ const CameraDisplay = () => {
                 <div style={{ position: 'absolute', right: 0 }}>{formatTimestampToDateTime(endTime)}</div>
                 {showTicks && renderTimeTicks()}
             </div>
-
         </div>
     );
 };
 
-export default CameraDisplay;
+export default ClipDisplay;
 
