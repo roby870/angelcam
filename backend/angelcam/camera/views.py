@@ -1,9 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import requests
+from account import views as account_views
 
 class SharedCamerasView(APIView):
-    
+    authentication_classes = [account_views.ExternalTokenAuthentication]
+
     angelcam_api_url = 'https://api.angelcam.com/v1/shared-cameras/' 
 
 

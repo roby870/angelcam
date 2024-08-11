@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 import requests
 from datetime import datetime, timedelta
-
+from account import views as account_views
 
 """
 si retention es null, no hay nada grabado. Si no es null, chequear que
@@ -11,7 +11,7 @@ hay que ver de usar el dato de retention para sacar la diferencia entre el dato 
 y la retention y en base a eso calcular cual es el start o el fin
 """
 class RecordingDaysView(APIView):
-    
+    authentication_classes = [account_views.ExternalTokenAuthentication]
     angelcam_recording_url = 'https://api.angelcam.com/v1/shared-cameras/{}/recording/'
 
 
@@ -45,7 +45,7 @@ class RecordingDaysView(APIView):
     
 
 class RecordingClipsView(APIView):
-
+    authentication_classes = [account_views.ExternalTokenAuthentication]
     angelcam_timeline_url = 'https://api.angelcam.com/v1/shared-cameras/{}/recording/timeline/?start={}&end={}'
     
     
@@ -70,7 +70,7 @@ class RecordingClipsView(APIView):
     
 
 class RecordingStreamView(APIView):
-
+    authentication_classes = [account_views.ExternalTokenAuthentication]
     angelcam_stream_url = 'https://api.angelcam.com/v1/shared-cameras/{}/recording/stream/?start={}&end={}'
 
     def get(self, request, id, start, end):
