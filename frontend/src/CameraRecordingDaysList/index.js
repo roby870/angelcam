@@ -3,6 +3,9 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import CameraRecordingClipsList from './CameraRecodingClipsList';
 import Accordion from 'react-bootstrap/Accordion';
+import NavigationBar from '../NavigationBar';
+import Spinner from 'react-bootstrap/Spinner';
+
 
 const CameraRecordingDaysList = () => {
 
@@ -33,11 +36,26 @@ const CameraRecordingDaysList = () => {
         fetchData();
       }
     }, [navigate, id]);
+
+
+    const listLinks = [
+      { label: 'Home', path: 'http://localhost:3000/' },
+    
+    ];
   
   
     return (
+      <>
+        <NavigationBar links={listLinks} /> 
         <div className="container mt-5">
             <div className="row">
+            {recordingDays.length === 0 && 
+                        <div className='d-flex justify-content-center mt-5'>
+                          <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                          </Spinner>
+                        </div>
+            }
             <Accordion >
                 {recordingDays.map(item => (
                     <div className="col-8 mt-4 mx-auto" key={item.recording_start}>
@@ -49,6 +67,7 @@ const CameraRecordingDaysList = () => {
               </Accordion>
             </div>
         </div>
+      </>
     );
   };
   

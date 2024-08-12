@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect }  from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactPlayer from 'react-player';
-
+import NavigationBar from '../NavigationBar';
 
 
 const ClipDisplay = () => {
@@ -14,6 +14,7 @@ const ClipDisplay = () => {
     const [duration, setDuration] = useState(0);
     const [searchParams] = useSearchParams();
     const type = searchParams.get('type');
+    const id = searchParams.get('id');
     const [streamPaused, setStreamPaused] = useState(false);
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
@@ -151,46 +152,56 @@ const ClipDisplay = () => {
         }
         return ticks;
     };
+
+
+    const clipLinks = [
+        { label: 'Home', path: '/' },
+        { label: 'Clips', path: `http://localhost:3000/camera-recordings-list/${id}?type=${type}`},
+      
+      ];
     
 
     return (
-        <div className="player-wrapper d-flex justify-content-center align-items-center flex-column mt-3">
-            { type === "h264" ? 
-                <ReactPlayer
-                    ref={playerRef}
-                    url={url}
-                    playing={true}
-                    controls={false}
-                    width="80%"
-                    height="80%"
-                    onProgress={handleProgress}
-                    progressInterval={100}
-                /> :
-                <img src={url} className="card-img-top" alt="clip" /> 
-            }
-            <div
-                ref={progressBarRef}
-                style={{ position: 'relative', width: '80%', height: '30px', backgroundColor: '#e0e0e0'}}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-            >
+        <>
+            <NavigationBar links={clipLinks} /> 
+            <div className="player-wrapper d-flex justify-content-center align-items-center flex-column">
+                { type === "h264" ? 
+                    <ReactPlayer
+                        ref={playerRef}
+                        url={url}
+                        playing={true}
+                        controls={false}
+                        width="80%"
+                        height="80%"
+                        onProgress={handleProgress}
+                        progressInterval={100}
+                    /> :
+                    <img src={url} className="card-img-top" alt="clip" /> 
+                }
                 <div
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: `${Math.min((playedSeconds / duration) * 100, 100)}%`,
-                        width: '2px',
-                        height: '100%',
-                        backgroundColor: 'red',
-                    }}
-                />
-                <div style={{ position: 'absolute', left: 0 }}>{formatTimestampToDateTime(startTime)}</div>
-                <div style={{ position: 'absolute', right: 0 }}>{formatTimestampToDateTime(endTime)}</div>
-                {showTicks && renderTimeTicks()}
+                    ref={progressBarRef}
+                    style={{ position: 'relative', width: '80%', height: '30px', backgroundColor: '#e0e0e0'}}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                >
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: `${Math.min((playedSeconds / duration) * 100, 100)}%`,
+                            width: '2px',
+                            height: '100%',
+                            backgroundColor: 'red',
+                        }}
+                    />
+                    <div style={{ position: 'absolute', left: 0 }}>{formatTimestampToDateTime(startTime)}</div>
+                    <div style={{ position: 'absolute', right: 0 }}>{formatTimestampToDateTime(endTime)}</div>
+                    {showTicks && renderTimeTicks()}
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

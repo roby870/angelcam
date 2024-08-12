@@ -1,9 +1,16 @@
 import React from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import VideoPlayer from '../VideoPlayer';
+import NavigationBar from '../NavigationBar';
 
 
 const CameraLiveDisplay = () => {
+
+    const liveLinks = [
+        { label: 'Home', path: 'http://localhost:3000/' },
+      
+      ];
+
 
     const { url } = useParams();
     const [searchParams] = useSearchParams();
@@ -11,7 +18,10 @@ const CameraLiveDisplay = () => {
 
 
     return(
-        <VideoPlayer src={url} type={type}  />
+        <>
+            <NavigationBar links={liveLinks} /> 
+            <VideoPlayer src={url} type={type}  /> 
+        </>
     );
 
 
