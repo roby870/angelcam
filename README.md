@@ -6,7 +6,7 @@
 
 ### Backend set up
 
-Once you clone the repository, create a virtual environment on the /backend directory running `python3.12 -m venv venv`. Then activate it with `source ./venv/bin/activate`, and you have to run (on /backend directory) `pip install -r requirements.txt`. 
+Once you have cloned the repository, create a virtual environment on the /backend directory running `python3.12 -m venv venv`. Then activate it with `source ./venv/bin/activate`, and you have to run (on /backend directory) `pip install -r requirements.txt`. 
 Finally, run on /backend/angelcam `python manage.py migrate` to set up the database.
 
 
