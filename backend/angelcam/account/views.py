@@ -5,7 +5,7 @@ from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from .models import CustomUser
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework_simplejwt.tokens import RefreshToken
+
 
 
 class ExternalTokenAuthentication(BaseAuthentication):
