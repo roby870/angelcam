@@ -26,10 +26,15 @@ function CameraRecodingClipsListItem({id, start, end}) {
             setLoading(true)
             const isoDateStringStart = start.replace(' ', 'T') + 'Z';
             const isoDateStringEnd = end.replace(' ', 'T') + 'Z';
-            const response = await axios.get(`http://127.0.0.1:8000/recording/shared-recording-stream/${id}/${isoDateStringStart}/${isoDateStringEnd}/`);
+            const response = await axios.get(`http://127.0.0.1:8000/recording/shared-recording-stream/${id}/${isoDateStringStart}/${isoDateStringEnd}/`, {
+              withCredentials: true  
+            });
             const encodedUrl = encodeURIComponent(response.data);
             navigate(`/clip-display/${encodedUrl}/?startTime=${start}&endTime=${end}&type=${type}&id=${id}`);
           } catch (error) {
+            if (error.status === 401){
+              navigate('/login');
+            }
             console.error('Error fetching data:', error);
           }
         };

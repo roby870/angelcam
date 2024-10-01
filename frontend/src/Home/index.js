@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import CameraCard from '../CameraCard';
@@ -18,19 +17,18 @@ const Home = () => {
   useEffect(() => {
     if (initialRender.current) {
       initialRender.current = false;
-      const accessToken = Cookies.get('token');
-      if (accessToken) {
-        axios.defaults.headers.common['Authorization'] = `PersonalAccessToken ${accessToken}`;
-      } else {
-        navigate('/login');
-      }
       const fetchData = async () => {
         try {
-          const response = await axios.get('http://127.0.0.1:8000/camera/shared-cameras/');
+          const response = await axios.get('http://127.0.0.1:8000/camera/shared-cameras/', {
+            withCredentials: true  
+          });
           setCameras(response.data.results)
           setHasMore(response.data.next !== null);
           setNextUrl(response.data.next)
         } catch (error) {
+          if (error.status === 401){
+            navigate('/login');
+          }
           console.error('Error fetching data:', error);
         }
       };
@@ -42,12 +40,17 @@ const Home = () => {
   const handleNextPage = (event) => {
     const fetchNextPage = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/camera/shared-cameras/${nextUrl}/`);
+        const response = await axios.get(`http://127.0.0.1:8000/camera/shared-cameras/${nextUrl}/`, {
+          withCredentials: true  
+        });
         setCameras(response.data)
         setCameras(prevCameras => {return [...prevCameras, ...response.data.results]});
         setHasMore(response.data.next !== null);
         setNextUrl(response.data.next)
       } catch (error) {
+        if (error.status === 401){
+          navigate('/login');
+        }
         console.error('Error fetching data:', error);
       }
     };

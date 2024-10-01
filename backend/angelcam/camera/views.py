@@ -34,9 +34,9 @@ class SharedCamerasView(APIView):
 
 
     def get(self, request, next_url = None):
-        auth_header = request.headers.get('Authorization')
+        token = request.COOKIES.get('token')
         headers = {
-            'Authorization': f'{auth_header}',
+            'Authorization': f'PersonalAccessToken {token}',
             'Accept': 'application/json'
         } 
         if(next_url):

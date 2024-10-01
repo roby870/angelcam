@@ -29,9 +29,9 @@ class RecordingDaysView(APIView):
 
 
     def get(self, request, id):
-        auth_header = request.headers.get('Authorization')
+        token = request.COOKIES.get('token')
         headers = {
-            'Authorization': f'{auth_header}',
+            'Authorization': f'PersonalAccessToken {token}',
             'Accept': 'application/json'
         }  
         response = requests.get(self.angelcam_recording_url.format(id), headers=headers)
@@ -58,9 +58,9 @@ class RecordingClipsView(APIView):
 
 
     def get(self, request, id, start, end):
-        auth_header = request.headers.get('Authorization')
+        token = request.COOKIES.get('token')
         headers = {
-            'Authorization': f'{auth_header}',
+            'Authorization': f'PersonalAccessToken {token}',
             'Accept': 'application/json'
         }  
         response = requests.get(self.angelcam_timeline_url.format(id, start, end), headers=headers)
@@ -77,9 +77,9 @@ class RecordingStreamView(APIView):
 
 
     def get(self, request, id, start, end):
-        auth_header = request.headers.get('Authorization')
+        token = request.COOKIES.get('token')
         headers = {
-            'Authorization': f'{auth_header}',
+            'Authorization': f'PersonalAccessToken {token}',
             'Accept': 'application/json'
         }  
         response = requests.get(self.angelcam_stream_url.format(id, start, end), headers=headers)

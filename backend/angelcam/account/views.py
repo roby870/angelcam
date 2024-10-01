@@ -2,10 +2,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 import requests
 from rest_framework.authentication import BaseAuthentication
-from rest_framework.exceptions import AuthenticationFailed
 from .models import CustomUser
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.http import JsonResponse
+from angelcam.settings import SECURE_COOKIE
 
 
 class ExternalTokenAuthentication(BaseAuthentication):
@@ -13,14 +13,8 @@ class ExternalTokenAuthentication(BaseAuthentication):
     angelcam_api_url = 'https://api.angelcam.com/v1/me'
 
     def authenticate(self, request):
-        auth_header = request.headers.get('Authorization')
-        if not auth_header:
-            return None
-        try:
-            token_type, token = auth_header.split(' ')
-        except ValueError:
-            raise AuthenticationFailed('Invalid token header. No credentials provided.')
-        if token_type.lower() != 'personalaccesstoken':
+        token = request.COOKIES.get('token')
+        if not token:
             return None
         headers = {
             'Authorization': f'PersonalAccessToken {token}',
@@ -31,8 +25,8 @@ class ExternalTokenAuthentication(BaseAuthentication):
             user = CustomUser(email=response.json().get('email'))
             return (user, token)
         else:
-            return Response(status=response.status_code)
-
+            response = Response(status=response.status_code)
+            return response
     
 
 class LoginView(APIView):
@@ -54,8 +48,17 @@ class LoginView(APIView):
                 except ObjectDoesNotExist: #regist user
                     user = CustomUser(email = response.json().get('email'))
                     user.save()
-                return Response({'message': 'Login successful'}, status=200)
+                response = JsonResponse({'message': 'Login successful'}, status=200)
+                response.set_cookie(
+                key = 'token',
+                value = token,
+                httponly = True,
+                secure = SECURE_COOKIE,  #Developent mode with HTTP
+                samesite = 'None'
+                )
+                return response
             else: 
                 return Response({'message': 'Missing or invalid authorization.'}, status=401)
         else:
             return Response(status=response.status_code)
+        

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import Cookies from 'js-cookie';
 import CameraRecordingClipsList from './CameraRecodingClipsList';
 import Accordion from 'react-bootstrap/Accordion';
 import NavigationBar from '../NavigationBar';
@@ -20,17 +19,16 @@ const CameraRecordingDaysList = () => {
     useEffect(() => {
       if (initialRender.current) {
         initialRender.current = false;
-        const accessToken = Cookies.get('token');
-        if (accessToken) {
-          axios.defaults.headers.common['Authorization'] = `PersonalAccessToken ${accessToken}`;
-        } else {
-          navigate('/login');
-        }
         const fetchData = async () => {
           try {
-            const response = await axios.get(`http://127.0.0.1:8000/recording/shared-recording-days/${id}/`);
+            const response = await axios.get(`http://127.0.0.1:8000/recording/shared-recording-days/${id}/`, {
+              withCredentials: true 
+            });
             setRecordingDays(response.data)
           } catch (error) {
+            if (error.status === 401){
+              navigate('/login');
+            }
             console.error('Error fetching data:', error);
           }
         };

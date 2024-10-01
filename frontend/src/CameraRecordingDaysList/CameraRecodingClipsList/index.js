@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import Accordion from 'react-bootstrap/Accordion';
 import { useAccordionButton } from 'react-bootstrap/AccordionButton';
 import Button from 'react-bootstrap/Button';
@@ -12,7 +13,7 @@ function CameraRecordingClipsList({eventKey, id, start, end}){
 
     const [clips, setClips] = useState([]);
     const [doFetch, setDoFetch] = useState(true); //We will execute the fetch only once
-    
+    const navigate = useNavigate();
 
     function CustomToggle({ children, eventKey }) {
         const decoratedOnClick = useAccordionButton(eventKey, () => {
@@ -21,11 +22,16 @@ function CameraRecordingClipsList({eventKey, id, start, end}){
                 const isoDateStringEnd = end.replace(' ', 'T') + 'Z';
                 const fetchData = async () => {
                     try {
-                      const response = await axios.get(`http://127.0.0.1:8000/recording/shared-recording-clips/${id}/${isoDateStringStart}/${isoDateStringEnd}/`);
+                      const response = await axios.get(`http://127.0.0.1:8000/recording/shared-recording-clips/${id}/${isoDateStringStart}/${isoDateStringEnd}/`, {
+                        withCredentials: true  
+                      });
                       setDoFetch(false)
                       setClips(response.data)
                     } catch (error) {
-                      console.error('Error fetching data:', error);
+                        if (error.status === 401){
+                            navigate('/login');
+                        }
+                        console.error('Error fetching data:', error);
                     }
                   };
                 fetchData();
