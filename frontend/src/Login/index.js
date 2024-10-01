@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import qs from 'qs';
+import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -19,12 +20,12 @@ function Login(){
     useEffect(() => {
         if (initialRender.current) {
           initialRender.current = false;
-          const accessToken = localStorage.getItem('token');
+          const accessToken = Cookies.get('token');
           if (accessToken) {
             navigate('/');
           } 
         }
-    }, []);
+    }, [navigate]);
 
 
     axios.interceptors.response.use(function (response) {
@@ -52,7 +53,7 @@ function Login(){
                 }
             });
             if (response.status === 200) {
-                localStorage.setItem('token', token);
+                Cookies.set('token', token, { expires: 1, secure: true, sameSite: 'Strict', httpOnly: false });
                 navigate('/');
             } 
           } catch (error) {

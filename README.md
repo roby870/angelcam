@@ -23,3 +23,8 @@ On /frontend, run `npm run start` to run the frontent server.
 Note that some URLs are hardcoded, so you need to use the default local servers that these commands run (http://localhost:3000/ on the frontend server and http://127.0.0.1:8000/ on the backend server). Also, keep in mind that all of these are bash indications.
 
 
+### Login credentials
+
+You can send me a message on LinkedIn so I can share an email and a token with you, allowing you to log in and view two test cameras.
+
+

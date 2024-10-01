@@ -65,7 +65,7 @@ const ClipDisplay = () => {
                     const match = url.match(regex);
                     const streamer_domain = match[1];
                     const stream_id = match[2];
-                    const response = await axios.post(`https://${streamer_domain}/recording/streams/${stream_id}/pause/`);
+                    await axios.post(`https://${streamer_domain}/recording/streams/${stream_id}/pause/`);
                     setStreamPaused(true)
                 }
                 catch (error){

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import CameraRecordingClipsList from './CameraRecodingClipsList';
 import Accordion from 'react-bootstrap/Accordion';
 import NavigationBar from '../NavigationBar';
@@ -19,7 +20,7 @@ const CameraRecordingDaysList = () => {
     useEffect(() => {
       if (initialRender.current) {
         initialRender.current = false;
-        const accessToken = localStorage.getItem('token');
+        const accessToken = Cookies.get('token');
         if (accessToken) {
           axios.defaults.headers.common['Authorization'] = `PersonalAccessToken ${accessToken}`;
         } else {

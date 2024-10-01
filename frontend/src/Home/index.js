@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import CameraCard from '../CameraCard';
 import Button from 'react-bootstrap/Button';
-
 
 const Home = () => {
 
@@ -18,7 +18,7 @@ const Home = () => {
   useEffect(() => {
     if (initialRender.current) {
       initialRender.current = false;
-      const accessToken = localStorage.getItem('token');
+      const accessToken = Cookies.get('token');
       if (accessToken) {
         axios.defaults.headers.common['Authorization'] = `PersonalAccessToken ${accessToken}`;
       } else {
