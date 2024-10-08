@@ -127,7 +127,9 @@ const ClipDisplay = () => {
 
     const renderTimeTicks = () => {
         const ticks = [];
-        for (let i = 0; i <= duration; i += 15) {
+        const totalTicks = 8; 
+        const interval = duration / totalTicks; 
+        for (let i = 0; i <= duration; i += interval) {
             const leftPosition = (i / duration) * 100;
             let transformValue = 'translateX(-50%)';
             if (i === 0) {
